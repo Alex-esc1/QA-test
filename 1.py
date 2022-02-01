@@ -1,25 +1,37 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
-import requests
-import time
-import pytest
+import math
 
-options = Options()
-options.headless = True
-driver = webdriver.Firefox(executable_path=r"C:/test/geckodriver.exe")
-driver.maximize_window()
-driver.get("https://minus50.by/")
- 
-elem = driver.find_element_by_class_name("search__control")
-elem.send_keys("Кирпич")
-elem.send_keys(Keys.ENTER)
+def calc(x):
+  return str(math.log(abs(12*math.sin(int(x)))))
 
-elems = driver.find_elements_by_xpath("//div[@class= 'contentBlock']/div")
-for elem in elems:
-    print (elem.get_attribute("href"))
-
-print(driver.title)
+opt = webdriver.ChromeOptions()
+opt.add_experimental_option('w3c', False)
+browser = webdriver.Chrome(executable_path=r"C:/chromedriver/chromedriver.exe")
 
 
+browser.get("http://suninjuly.github.io/explicit_wait2.html")
 
+# говорим Selenium проверять в течение 15 секунд, пока цена не станет равной 100 у.е.
+label = WebDriverWait(browser, 15).until(
+        EC.text_to_be_present_in_element((By.ID, 'price'), '$100')
+    )
+
+button = browser.find_element_by_id("book")
+button.click()
+
+x_element = browser.find_element_by_id("input_value")
+x = x_element.text
+y = calc(x)
+
+input_y = browser.find_element_by_id("answer")
+input_y.send_keys(y)
+
+button = browser.find_element_by_id("solve")
+button.click()
+
+alert2 = browser.switch_to.alert
+alert2_text = alert2.text
+print(alert2_text)
